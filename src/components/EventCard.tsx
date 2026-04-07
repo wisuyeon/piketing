@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Flame, ChevronDown, ExternalLink, Clock, MapPin } from "lucide-react";
 import { Event } from "@/data/events";
@@ -33,7 +33,7 @@ const statusConfig = {
   },
 };
 
-export function EventCard({ event, index }: EventCardProps) {
+export const EventCard = forwardRef<HTMLDivElement, EventCardProps>(({ event, index }, ref) => {
   const { user, bookmarks, toggleBookmark, openNudgeModal, openServerTimeModal } = useApp();
   const [tipOpen, setTipOpen] = useState(false);
   const [heartBounce, setHeartBounce] = useState(false);
@@ -58,10 +58,11 @@ export function EventCard({ event, index }: EventCardProps) {
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10, scale: 0.97 }}
-      transition={{ duration: 0.35, delay: index * 0.04 }}
+      transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.2) }}
       className={`card-glass rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 ${event.status === "마감" ? "opacity-60" : ""}`}
       onClick={handleCardClick}
     >
@@ -247,4 +248,4 @@ export function EventCard({ event, index }: EventCardProps) {
       </div>
     </motion.div>
   );
-}
+});

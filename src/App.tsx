@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import MainPage from "@/pages/MainPage";
+import AdminPage from "@/pages/AdminPage";
 import { AppProvider } from "@/context/AppContext";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       }>
         <Routes>
           <Route path="/" element={<MainPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </Suspense>
     </AppProvider>

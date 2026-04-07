@@ -8,11 +8,13 @@ import { EventCard } from "@/components/EventCard";
 import { LoginModal, NudgeModal } from "@/components/Modals";
 import { ServerTimeModal } from "@/components/ServerTimeModal";
 import { PersonalDashboard } from "@/components/PersonalDashboard";
-import { events, EventCategory } from "@/data/events";
+import { EventCategory } from "@/data/events";
+import { useEvents } from "@/hooks/useEvents";
 import { useApp } from "@/context/AppContext";
 
 export default function MainPage() {
   const { bookmarks } = useApp();
+  const { events, loading, error } = useEvents();
   const [liveOnly, setLiveOnly] = useState(false);
   const [activeCategory, setActiveCategory] = useState<EventCategory>("마라톤/액티비티");
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
@@ -61,8 +63,9 @@ export default function MainPage() {
       });
     });
 
+    console.log("Filtered events:", result.length, "from", events.length, "events, activeCategory:", activeCategory);
     return result;
-  }, [activeCategory, liveOnly, petFriendlyOnly, selectedFilters]);
+  }, [events, activeCategory, liveOnly, petFriendlyOnly, selectedFilters]);
 
   return (
     <div
@@ -90,8 +93,19 @@ export default function MainPage() {
 
       {/* Event card list */}
       <main className="max-w-2xl mx-auto px-4 py-4 space-y-4">
-        <AnimatePresence mode="popLayout">
-          {filteredEvents.length > 0 ? (
+        <AnimatePresence>
+          {loading ? (
+            <div className="text-center py-16">
+              <div className="w-8 h-8 border-2 border-[#FF4500] border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-[#8A8A8E] font-noto text-sm mt-4">데이터를 불러오는 중...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-16">
+              <div className="text-5xl mb-4">⚠️</div>
+              <p className="text-[#FF4500] font-noto text-base">데이터를 불러오는데 실패했습니다</p>
+              <p className="text-[#8A8A8E] font-noto text-sm mt-1">{error}</p>
+            </div>
+          ) : filteredEvents.length > 0 ? (
             filteredEvents.map((event, index) => (
               <EventCard key={event.id} event={event} index={index} />
             ))

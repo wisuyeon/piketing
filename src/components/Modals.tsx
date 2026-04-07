@@ -1,9 +1,25 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 
 export function LoginModal() {
-  const { isLoginModalOpen, closeLoginModal, login } = useApp();
+  const { isLoginModalOpen, closeLoginModal, loginWithOAuth } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleOAuthLogin = async (provider: "kakao" | "naver") => {
+    setLoading(true);
+    setError("");
+
+    try {
+      await loginWithOAuth(provider);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -14,7 +30,10 @@ export function LoginModal() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm"
-            onClick={closeLoginModal}
+            onClick={() => {
+              closeLoginModal();
+              resetForm();
+            }}
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 20 }}
@@ -47,36 +66,45 @@ export function LoginModal() {
                   피켓팅 생존 전략가
                 </h2>
                 <p className="text-[#8A8A8E] font-noto text-sm leading-relaxed">
-                  로그인하고 나만의 생존 리스트를<br />관리하세요
+                  소셜 로그인을 통해<br />나만의 생존 리스트를 관리하세요
                 </p>
               </div>
 
-              {/* Login buttons */}
-              <div className="space-y-3">
+              {/* OAuth Buttons */}
+              <div className="space-y-4">
+                {error && (
+                  <div className="text-[#FF4500] text-sm text-center">
+                    {error}
+                  </div>
+                )}
+
                 <button
-                  onClick={() => login("kakao")}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl font-noto font-semibold text-sm transition-all hover:opacity-90 active:scale-98"
-                  style={{ background: "#FEE500", color: "#191919" }}
+                  onClick={() => handleOAuthLogin('kakao')}
+                  disabled={loading}
+                  className="w-full py-3.5 rounded-xl bg-[#FEE500] text-black font-noto font-semibold text-sm transition-all hover:opacity-90 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M9 1.5C4.86 1.5 1.5 4.09 1.5 7.26c0 2.04 1.35 3.83 3.39 4.87l-.87 3.24c-.08.3.23.54.5.38L8.35 13.4c.21.02.43.03.65.03 4.14 0 7.5-2.59 7.5-5.76S13.14 1.5 9 1.5z" fill="#191919"/>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 5.52 2 9.32c0 2.48 1.68 4.68 4.32 6.04-.08.32-.24.88-.52 1.52-.4.88-.92 1.6-.92 1.6s.32.08.8.04c.48-.04.88-.12 1.2-.2.48-.12 1.04-.28 1.68-.52.88-.32 1.84-.76 2.72-1.24C15.6 16.8 18.4 15.6 20 13.6c1.6-2 2.4-4.32 2.4-6.28C22 5.52 17.52 2 12 2z"/>
                   </svg>
-                  카카오로 1초 로그인
+                  카카오로 로그인
                 </button>
 
                 <button
-                  onClick={() => login("naver")}
-                  className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl font-noto font-semibold text-sm transition-all hover:opacity-90 active:scale-98"
-                  style={{ background: "#03C75A", color: "#fff" }}
+                  onClick={() => handleOAuthLogin('naver')}
+                  disabled={loading}
+                  className="w-full py-3.5 rounded-xl bg-[#03C75A] text-white font-noto font-semibold text-sm transition-all hover:opacity-90 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <span className="font-bold text-lg leading-none">N</span>
-                  네이버로 1초 로그인
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16.273 12.845L7.376 0H0v24h7.726V11.155L16.624 24H24V12.845z"/>
+                  </svg>
+                  네이버로 로그인
                 </button>
               </div>
 
-              <p className="text-center text-[#8A8A8E] text-[11px] font-noto mt-4">
+              <p className="text-center text-[#8A8A8E] text-[11px] font-noto mt-6">
                 로그인 시 서비스 이용약관에 동의하게 됩니다
               </p>
+
             </div>
           </motion.div>
         </>

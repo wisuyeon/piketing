@@ -42,18 +42,13 @@ export function NavBar({ bookmarkCount, onDashboardOpen }: { bookmarkCount: numb
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2C2C2E] bg-[#1C1C1E] hover:border-[#8A8A8E] transition-colors group"
               >
                 <div
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-xs"
-                  style={{
-                    background: user.provider === "kakao" ? "#FEE500" : "#03C75A",
-                    color: user.provider === "kakao" ? "#000" : "#fff",
-                    fontWeight: 700,
-                    fontSize: 9,
-                  }}
+                  className="w-5 h-5 rounded-full bg-[#FF4500] flex items-center justify-center text-xs text-white font-bold"
+                  style={{ fontSize: 9 }}
                 >
-                  {user.provider === "kakao" ? "K" : "N"}
+                  {user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-[#8A8A8E] text-xs font-noto group-hover:text-[#F0EDE8] transition-colors hidden sm:block">
-                  {user.name.slice(0, 4)}
+                  {user.name || user.email.split('@')[0]}
                 </span>
                 <LogOut className="w-3 h-3 text-[#8A8A8E] group-hover:text-[#F0EDE8] transition-colors" />
               </button>
